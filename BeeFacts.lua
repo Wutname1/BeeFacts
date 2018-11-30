@@ -51,9 +51,13 @@ local facts = {
 
 function BeeFacts:OnEnable()
 	self:RegisterChatCommand('beefact', 'ChatCommand')
+	self:RegisterChatCommand('beefacts', 'ChatCommand')
 end
 
 function BeeFacts:ChatCommand(input)
-	local msg = facts[math.random(0, #facts - 1)]
-	SendChatMessage('BeeFacts: ' .. msg, 'GUILD', nil)
+	SendChatMessage('BeeFacts: ' .. facts[math.random(0, #facts - 1)], 'GUILD', nil)
+end
+
+function BeeFacts:Options()
+
 end
