@@ -1,5 +1,6 @@
 local _, BeeFacts = ...
 BeeFacts = LibStub('AceAddon-3.0'):NewAddon(BeeFacts, 'BeeFacts', 'AceConsole-3.0')
+local StdUi = LibStub('StdUi'):NewInstance()
 
 local facts = {
 	'The honey bee has been around for millions of years.',
@@ -48,16 +49,98 @@ local facts = {
 	'To reinforce their hives, bees use a resin from poplar and evergreen trees called propolis. It’s basically beehive glue. Although bees use it as caulk, humans use it to fight off bacteria, viruses, and fungi.',
 	'Honeybees make out faces the same way we do. They take parts—like eyebrows, lips, and ears—and cobble them together to make out the whole face. It’s called "configular processing," and it might help computer scientists improve face recognition technology'
 }
+local DBdefaults = {
+	profile = {
+		Output = 'GUILD',
+		Channel = ''
+	}
+}
+
+function BeeFacts:OnInitialize()
+	BeeFacts.BfDB = LibStub('AceDB-3.0'):New('BeeFactsDB', DBdefaults)
+	BeeFacts.DB = BeeFacts.BfDB.profile
+end
+
 
 function BeeFacts:OnEnable()
 	self:RegisterChatCommand('beefact', 'ChatCommand')
 	self:RegisterChatCommand('beefacts', 'ChatCommand')
+
+	local window = StdUi:Window(nil, 'Bee facts!', 200, 200)
+	window:SetPoint('CENTER', 0, 0)
+	window:SetFrameStrata('DIALOG')
+
+	local items = {
+		{text = 'Instance chat', value = 'INSTANCE_CHAT'},
+		{text = 'RAID', value = 'RAID'},
+		{text = 'PARTY', value = 'PARTY'},
+		{text = 'SAY', value = 'SAY'},
+		{text = 'GUILD', value = 'GUILD'},
+		{text = 'Custom channel', value = 'CHANNEL'}
+	}
+
+	window.FACT = StdUi:Button(window, 190, 20, 'FACT!')
+	window.FACT:SetPoint('BOTTOM', window, 'BOTTOM', 0, 2)
+	window.FACT:SetScript(
+		'OnClick',
+		function(this)
+			if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
+				
+			elseif BeeFacts.DB.Output ~= 'CHANNEL' then
+				local announceChannel = BeeFacts.DB.Output
+
+				-- Do some group checking logic
+				if not IsInGroup(2) then
+					if IsInRaid() then
+						if announceChannel == "INSTANCE_CHAT" then announceChannel = "RAID" end
+					elseif IsInGroup(1) then
+						if announceChannel == "INSTANCE_CHAT" then announceChannel = "PARTY" end
+					end
+				elseif IsInGroup(2) then
+					if announceChannel == "RAID" then announceChannel = "INSTANCE_CHAT" end
+					if announceChannel == "PARTY" then announceChannel = "INSTANCE_CHAT" end
+				end
+
+				--Send it!
+				SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], announceChannel, nil)
+			else
+				print('Beefacts! Has encountered and error on sending your factoid.')
+			end
+		end
+	)
+
+	local Outputlbl = StdUi:Label(window, 'Who should we inform?', nil, nil, 180, 20)
+	local Output = StdUi:Dropdown(window, 190, 20, items, BeeFacts.DB.Output)
+	local Channellbl = StdUi:Label(window, 'Channel name:', nil, nil, 180, 20)
+	local Channel = StdUi:EditBox(window, 190, 20, BeeFacts.DB.Channel)
+	if value == 'CHANNEL' then
+		Channel:Enable()
+	else
+		Channel:Disable()
+	end
+
+	Output.OnValueChanged = function(self, value)
+		BeeFacts.DB.Output = value
+		if value == 'CHANNEL' then
+			Channel:Enable()
+		else
+			Channel:Disable()
+		end
+	end
+	Channel.OnValueChanged = function(self, value)
+		BeeFacts.DB.Channel = value
+	end
+
+	StdUi:GlueTop(Outputlbl, window, 0, -45)
+	StdUi:GlueBelow(Output, Outputlbl, 0, -2)
+	StdUi:GlueBelow(Channellbl, Output, 0, -20)
+	StdUi:GlueBelow(Channel, Channellbl, 0, -2)
+
+
+	window:Hide()
+	BeeFacts.window = window
 end
 
 function BeeFacts:ChatCommand(input)
-	SendChatMessage('BeeFacts: ' .. facts[math.random(0, #facts - 1)], 'GUILD', nil)
-end
-
-function BeeFacts:Options()
-
+	BeeFacts.window:Show()
 end

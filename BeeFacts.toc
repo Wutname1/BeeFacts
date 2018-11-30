@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: BeeFacts
 ## Notes: Facts. About bees.
-## Version: 0.1
+## Version: @project-version@
 ## Author: Wutname1
 ## X-Curse-Project-ID: 30800
 ## SavedVariables: BeeFactsDB
