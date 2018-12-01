@@ -3,7 +3,7 @@
 ## Notes: Facts. About bees.
 ## Version: @project-version@
 ## Author: Wutname1
-## X-Curse-Project-ID: 30800
+## X-Curse-Project-ID: 308000
 ## SavedVariables: BeeFactsDB
 
 loader.xml
