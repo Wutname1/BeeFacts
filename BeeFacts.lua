@@ -126,6 +126,20 @@ local DBdefaults = {
 	}
 }
 
+function BeeFacts:isInTable(tab, frameName)
+	if tab == nil or frameName == nil then
+		return false
+	end
+	for _, v in ipairs(tab) do
+		if v ~= nil and frameName ~= nil then
+			if (strlower(v) == strlower(frameName)) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 function BeeFacts:OnInitialize()
 	BeeFacts.BfDB = LibStub('AceDB-3.0'):New('BeeFactsDB', DBdefaults)
 	BeeFacts.DB = BeeFacts.BfDB.profile
@@ -218,5 +232,21 @@ function BeeFacts:OnEnable()
 end
 
 function BeeFacts:ChatCommand(input)
-	BeeFacts.window:Show()
+	if input and input ~= '' then
+		local AllowedChannels = {
+			'RAID',
+			'PARTY',
+			'SAY',
+			'GUILD'
+		}
+		input = input:upper()
+		if not BeeFacts:isInTable(AllowedChannels, input) then
+			print('BeeFacts Error! You specified "' .. input .. '" you can only specify RAID, PARTY, SAY, and GUILD')
+			return
+		end
+
+		SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], input, nil)
+	else
+		BeeFacts.window:Show()
+	end
 end
