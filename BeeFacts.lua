@@ -154,6 +154,7 @@ function BeeFacts:OnEnable()
 		'OnClick',
 		function(this)
 			if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
+				SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], BeeFacts.DB.Output, nil, BeeFacts.DB.Channel)
 			elseif BeeFacts.DB.Output ~= 'CHANNEL' then
 				local announceChannel = BeeFacts.DB.Output
 
