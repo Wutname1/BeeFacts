@@ -159,6 +159,7 @@ function BeeFacts:OnEnable()
 		{text = 'PARTY', value = 'PARTY'},
 		{text = 'SAY', value = 'SAY'},
 		{text = 'GUILD', value = 'GUILD'},
+		{text = 'No chat', value = 'SELF'},
 		{text = 'Custom channel', value = 'CHANNEL'}
 	}
 
@@ -169,6 +170,8 @@ function BeeFacts:OnEnable()
 		function(this)
 			if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
 				SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], BeeFacts.DB.Output, nil, BeeFacts.DB.Channel)
+			elseif BeeFacts.DB.Output == 'SELF' then
+				window.tbFact:SetValue('BeeFacts! ' .. facts[math.random(0, #facts - 1)])
 			elseif BeeFacts.DB.Output ~= 'CHANNEL' then
 				local announceChannel = BeeFacts.DB.Output
 
@@ -204,6 +207,7 @@ function BeeFacts:OnEnable()
 	local Output = StdUi:Dropdown(window, 190, 20, items, BeeFacts.DB.Output)
 	local Channellbl = StdUi:Label(window, 'Channel name:', nil, nil, 180, 20)
 	local Channel = StdUi:EditBox(window, 190, 20, BeeFacts.DB.Channel)
+	window.tbFact = StdUi:EditBox(window, 190, 20, '')
 	if value == 'CHANNEL' then
 		Channel:Enable()
 	else
@@ -224,8 +228,9 @@ function BeeFacts:OnEnable()
 
 	StdUi:GlueTop(Outputlbl, window, 0, -45)
 	StdUi:GlueBelow(Output, Outputlbl, 0, -2)
-	StdUi:GlueBelow(Channellbl, Output, 0, -20)
+	StdUi:GlueBelow(Channellbl, Output, 0, -10)
 	StdUi:GlueBelow(Channel, Channellbl, 0, -2)
+	StdUi:GlueBelow(Channellbl, Fact, 0, -10)
 
 	window:Hide()
 	BeeFacts.window = window
