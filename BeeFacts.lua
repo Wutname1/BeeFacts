@@ -145,11 +145,37 @@ function BeeFacts:OnInitialize()
 	BeeFacts.DB = BeeFacts.BfDB.profile
 end
 
+function BeeFacts:SendMessage(msg)
+	if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
+		SendChatMessage(msg, BeeFacts.DB.Output, nil, BeeFacts.DB.Channel)
+	elseif BeeFacts.DB.Output == 'SELF' then
+		window.tbFact:SetValue(msg)
+	elseif BeeFacts.DB.Output ~= 'CHANNEL' then
+		local announceChannel = BeeFacts.DB.Output
+
+		-- Do some group checking logic
+		if not IsInGroup(2) and announceChannel == 'INSTANCE_CHAT' then
+			if IsInRaid() then
+				announceChannel = 'RAID'
+			elseif IsInGroup(1) then
+				announceChannel = 'PARTY'
+			end
+		elseif IsInGroup(2) and (announceChannel == 'RAID' or announceChannel == 'PARTY') then
+			announceChannel = 'INSTANCE_CHAT'
+		end
+
+		--Send it!
+		SendChatMessage(msg, announceChannel, nil)
+	else
+		print('Beefacts! Has encountered an error sending the message.')
+	end	
+end
+
 function BeeFacts:OnEnable()
 	self:RegisterChatCommand('beefact', 'ChatCommand')
 	self:RegisterChatCommand('beefacts', 'ChatCommand')
 
-	local window = StdUi:Window(nil, 'Bee facts!', 200, 200)
+	local window = StdUi:Window(nil, 'Bee facts!', 200, 230)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 
@@ -165,33 +191,19 @@ function BeeFacts:OnEnable()
 	}
 
 	window.FACT = StdUi:Button(window, 190, 20, 'FACT!')
-	window.FACT:SetPoint('BOTTOM', window, 'BOTTOM', 0, 2)
+	window.MORE = StdUi:Button(window, 190, 20, 'More?')
+	window.MORE:SetPoint('BOTTOM', window, 'BOTTOM', 0, 2)
+	window.FACT:SetPoint('BOTTOM', window.MORE, 'TOP', 0, 2)
 	window.FACT:SetScript(
 		'OnClick',
 		function(this)
-			if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
-				SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], BeeFacts.DB.Output, nil, BeeFacts.DB.Channel)
-			elseif BeeFacts.DB.Output == 'SELF' then
-				window.tbFact:SetValue('BeeFacts! ' .. facts[math.random(0, #facts - 1)])
-			elseif BeeFacts.DB.Output ~= 'CHANNEL' then
-				local announceChannel = BeeFacts.DB.Output
-
-				-- Do some group checking logic
-				if not IsInGroup(2) and announceChannel == 'INSTANCE_CHAT' then
-					if IsInRaid() then
-						announceChannel = 'RAID'
-					elseif IsInGroup(1) then
-						announceChannel = 'PARTY'
-					end
-				elseif IsInGroup(2) and (announceChannel == 'RAID' or announceChannel == 'PARTY') then
-					announceChannel = 'INSTANCE_CHAT'
-				end
-
-				--Send it!
-				SendChatMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)], announceChannel, nil)
-			else
-				print('Beefacts! Has encountered and error on sending your factoid.')
-			end
+			BeeFacts:SendMessage('BeeFacts! ' .. facts[math.random(0, #facts - 1)])
+		end
+	)
+	window.MORE:SetScript(
+		'OnClick',
+		function(this)
+			BeeFacts:SendMessage('Would you like to know more?')
 		end
 	)
 
