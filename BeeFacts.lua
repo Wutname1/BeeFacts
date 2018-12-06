@@ -158,6 +158,7 @@ function BeeFacts:OnEnable()
 		{text = 'RAID', value = 'RAID'},
 		{text = 'PARTY', value = 'PARTY'},
 		{text = 'SAY', value = 'SAY'},
+		{text = 'YELL', value = 'YELL'},
 		{text = 'GUILD', value = 'GUILD'},
 		{text = 'No chat', value = 'SELF'},
 		{text = 'Custom channel', value = 'CHANNEL'}
@@ -176,23 +177,14 @@ function BeeFacts:OnEnable()
 				local announceChannel = BeeFacts.DB.Output
 
 				-- Do some group checking logic
-				if not IsInGroup(2) then
+				if not IsInGroup(2) and announceChannel == 'INSTANCE_CHAT' then
 					if IsInRaid() then
-						if announceChannel == 'INSTANCE_CHAT' then
-							announceChannel = 'RAID'
-						end
+						announceChannel = 'RAID'
 					elseif IsInGroup(1) then
-						if announceChannel == 'INSTANCE_CHAT' then
-							announceChannel = 'PARTY'
-						end
+						announceChannel = 'PARTY'
 					end
-				elseif IsInGroup(2) then
-					if announceChannel == 'RAID' then
-						announceChannel = 'INSTANCE_CHAT'
-					end
-					if announceChannel == 'PARTY' then
-						announceChannel = 'INSTANCE_CHAT'
-					end
+				elseif IsInGroup(2) and (announceChannel == 'RAID' or announceChannel == 'PARTY') then
+					announceChannel = 'INSTANCE_CHAT'
 				end
 
 				--Send it!
@@ -242,11 +234,12 @@ function BeeFacts:ChatCommand(input)
 			'RAID',
 			'PARTY',
 			'SAY',
+			'YELL',
 			'GUILD'
 		}
 		input = input:upper()
 		if not BeeFacts:isInTable(AllowedChannels, input) then
-			print('BeeFacts Error! You specified "' .. input .. '" you can only specify RAID, PARTY, SAY, and GUILD')
+			print('BeeFacts Error! You specified "' .. input .. '" you can only specify RAID, PARTY, SAY, YELL, and GUILD')
 			return
 		end
 
