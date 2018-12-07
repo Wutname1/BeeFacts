@@ -149,7 +149,7 @@ function BeeFacts:SendMessage(msg)
 	if BeeFacts.DB.Output == 'CHANNEL' and BeeFacts.DB.Channel ~= '' then
 		SendChatMessage(msg, BeeFacts.DB.Output, nil, BeeFacts.DB.Channel)
 	elseif BeeFacts.DB.Output == 'SELF' then
-		window.tbFact:SetValue(msg)
+		BeeFacts.window.tbFact:SetValue(msg)
 	elseif BeeFacts.DB.Output ~= 'CHANNEL' then
 		local announceChannel = BeeFacts.DB.Output
 
@@ -168,14 +168,14 @@ function BeeFacts:SendMessage(msg)
 		SendChatMessage(msg, announceChannel, nil)
 	else
 		print('Beefacts! Has encountered an error sending the message.')
-	end	
+	end
 end
 
 function BeeFacts:OnEnable()
 	self:RegisterChatCommand('beefact', 'ChatCommand')
 	self:RegisterChatCommand('beefacts', 'ChatCommand')
 
-	local window = StdUi:Window(nil, 'Bee facts!', 200, 230)
+	local window = StdUi:Window(nil, 'Bee facts!', 200, 220)
 	window:SetPoint('CENTER', 0, 0)
 	window:SetFrameStrata('DIALOG')
 
@@ -234,7 +234,7 @@ function BeeFacts:OnEnable()
 	StdUi:GlueBelow(Output, Outputlbl, 0, -2)
 	StdUi:GlueBelow(Channellbl, Output, 0, -10)
 	StdUi:GlueBelow(Channel, Channellbl, 0, -2)
-	StdUi:GlueBelow(Channellbl, Fact, 0, -10)
+	StdUi:GlueBelow(window.tbFact, Channel, 0, -10)
 
 	window:Hide()
 	BeeFacts.window = window
