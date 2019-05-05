@@ -207,6 +207,8 @@ function BeeFacts:OnEnable()
 		end
 	)
 
+	local discontinued = StdUi:Label(window, 'BeeFacts has been discontinued.', 20, nil, 340, 20)
+	local discontinued2 = StdUi:Label(window, 'FunFacts is a new and improved replacement.', 15, nil, 350, 20)
 	local Outputlbl = StdUi:Label(window, 'Who should we inform?', nil, nil, 180, 20)
 	local Output = StdUi:Dropdown(window, 190, 20, items, BeeFacts.DB.Output)
 	local Channellbl = StdUi:Label(window, 'Channel name:', nil, nil, 180, 20)
@@ -229,6 +231,9 @@ function BeeFacts:OnEnable()
 	Channel.OnValueChanged = function(self, value)
 		BeeFacts.DB.Channel = value
 	end
+
+	StdUi:GlueAbove(discontinued, window, 0, 20)
+	StdUi:GlueBelow(discontinued2, discontinued, 0, -2)
 
 	StdUi:GlueTop(Outputlbl, window, 0, -45)
 	StdUi:GlueBelow(Output, Outputlbl, 0, -2)
